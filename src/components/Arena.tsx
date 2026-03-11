@@ -60,7 +60,7 @@ export function Arena({ cases, selectedCaseId, onSelectCase, onStartCase, onDela
           {filteredCases.length === 0 ? (
             <div className="text-center space-y-4">
               <p className="text-subtext text-lg">
-                {filter === 'today' ? 'Nenhum caso para hoje.' : 'Nenhum caso ativo.'}
+                {filter === 'today' ? 'Nenhum foco para hoje.' : 'Nenhuma tarefa ativa.'}
               </p>
               <button 
                 onClick={onQuickCreate}
@@ -72,7 +72,7 @@ export function Arena({ cases, selectedCaseId, onSelectCase, onStartCase, onDela
           ) : (
             <>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-subtext text-sm uppercase tracking-widest">Selecione um caso</h2>
+                <h2 className="text-subtext text-sm uppercase tracking-widest">Qual o seu próximo foco?</h2>
                 <span className="text-xs text-subtext font-mono">↑↓ para navegar, Enter para focar</span>
               </div>
               <div className="space-y-2">
@@ -133,16 +133,10 @@ export function Arena({ cases, selectedCaseId, onSelectCase, onStartCase, onDela
             Adiar <span className="opacity-50 text-xs">(D)</span>
           </button>
           <button 
-            onClick={() => onCompleteCase(selectedCase)}
-            className="text-sm font-mono text-subtext hover:text-text px-6 py-3 transition-colors"
-          >
-            Concluir
-          </button>
-          <button 
             onClick={() => onSelectCase('')}
             className="text-sm font-mono text-subtext hover:text-text px-6 py-3 transition-colors"
           >
-            Voltar (Esc)
+            Sair do Foco (Esc)
           </button>
         </div>
       </div>

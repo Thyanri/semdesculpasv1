@@ -41,38 +41,18 @@ export function TopBar({
       </div>
 
       <div className="flex items-center gap-4 text-subtext">
-        <button onClick={onOpenDebtList} className="hover:text-text transition-colors" title="Dívidas (Shift+D)">
-          <FileText className="w-[18px] h-[18px]" />
-        </button>
-        <button onClick={onOpenCoop} className="hover:text-text transition-colors" title="Co-op (Shift+C)">
-          <Users className="w-[18px] h-[18px]" />
-        </button>
-        <button onClick={onOpenLeague} className="hover:text-text transition-colors" title="Ligas (Shift+G)">
-          <Trophy className="w-[18px] h-[18px]" />
-        </button>
-        <button onClick={onOpenCommunity} className="hover:text-text transition-colors" title="Comunidade (Shift+U)">
-          <Globe className="w-[18px] h-[18px]" />
-        </button>
-        <button onClick={onOpenReplay} className="hover:text-text transition-colors" title="Replay (Shift+W)">
-          <History className="w-[18px] h-[18px]" />
-        </button>
-        <div className="w-px h-4 bg-border mx-1" />
-        <button onClick={onOpenLeaderboard} className="hover:text-text transition-colors" title="Ranking (Shift+L)">
-          <BarChart2 className="w-[18px] h-[18px]" />
-        </button>
-        <button onClick={onOpenFriends} className="hover:text-text transition-colors" title="Amigos (Shift+F)">
-          <FriendsIcon className="w-[18px] h-[18px]" />
-        </button>
+        {/* Social and Gamification Buttons Hidden by Default for Anti-Procrastination Focus */}
         <button onClick={onOpenProfile} className="hover:text-text transition-colors" title="Perfil (Shift+P)">
           <UserIcon className="w-[18px] h-[18px]" />
         </button>
-        <button onClick={onOpenTheme} className="hover:text-text transition-colors" title="Theme (Shift+T)">
+        <button onClick={onOpenTheme} className="hover:text-text transition-colors" title="Tema (Shift+T)">
           <Palette className="w-[18px] h-[18px]" />
         </button>
-        <button onClick={onOpenReports} className="hover:text-text transition-colors" title="Reports (Shift+R)">
+        <button onClick={onOpenReports} className="hover:text-text transition-colors" title="Progresso (Shift+R)">
           <BarChart2 className="w-[18px] h-[18px]" />
         </button>
-        <button onClick={onOpenSettings} className="hover:text-text transition-colors" title="Settings (Shift+S)">
+        {/* Debtlist might be useful as part of Settings or an advanced menu later */}
+        <button onClick={onOpenSettings} className="hover:text-text transition-colors" title="Configurações (Shift+S)">
           <Settings className="w-[18px] h-[18px]" />
         </button>
       </div>

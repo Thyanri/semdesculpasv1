@@ -48,7 +48,7 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
           if (templates.length > 0) {
             const t = templates[selectedIndex];
             await repository.createCase({
-              title: t.titlePrefix ? `${t.titlePrefix} ` : 'Novo Caso',
+              title: t.titlePrefix ? `${t.titlePrefix} ` : 'Nova Tarefa',
               nextPhysicalStep: t.defaultNextStep || 'Definir próximo passo',
               category: t.category,
               status: 'active'
@@ -118,7 +118,7 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
             </button>
           </div>
           <p className="text-sm text-subtext">
-            {tab === 'templates' ? 'Selecione um template (Enter para criar, Tab para manual)' : 'Crie um caso manualmente'}
+            {tab === 'templates' ? 'Selecione um template (Enter para criar, Tab para manual)' : 'Crie uma tarefa manualmente'}
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
                     }`}
                     onClick={async () => {
                       await repository.createCase({
-                        title: t.titlePrefix ? `${t.titlePrefix} ` : 'Novo Caso',
+                        title: t.titlePrefix ? `${t.titlePrefix} ` : 'Nova Tarefa',
                         nextPhysicalStep: t.defaultNextStep || 'Definir próximo passo',
                         category: t.category,
                         status: 'active'

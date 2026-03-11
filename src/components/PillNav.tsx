@@ -14,26 +14,14 @@ export function PillNav({ onNav, hasActiveCase }: PillNavProps) {
         onClick={() => hasActiveCase && onNav('arena')} 
         className={`text-xs sm:text-sm font-medium transition-colors px-2 whitespace-nowrap ${hasActiveCase ? 'text-subtext hover:text-text' : 'text-subtext/30 cursor-not-allowed'}`}
       >
-        Arena <span className="opacity-50 text-[10px] ml-1">2</span>
+        Lista de Foco <span className="opacity-50 text-[10px] ml-1">2</span>
       </button>
       <div className="w-px h-4 bg-border shrink-0"></div>
       <button 
         onClick={() => hasActiveCase && onNav('tribunal')} 
         className={`text-xs sm:text-sm font-medium transition-colors px-2 whitespace-nowrap ${hasActiveCase ? 'text-subtext hover:text-text' : 'text-subtext/30 cursor-not-allowed'}`}
       >
-        Tribunal <span className="opacity-50 text-[10px] ml-1">3</span>
-      </button>
-      <div className="w-px h-4 bg-border shrink-0"></div>
-      <button onClick={() => onNav('reports')} className="text-xs sm:text-sm font-medium text-subtext hover:text-text transition-colors px-2 whitespace-nowrap">
-        Reports <span className="opacity-50 text-[10px] ml-1">4</span>
-      </button>
-      <div className="w-px h-4 bg-border shrink-0"></div>
-      <button onClick={() => onNav('debtList')} className="text-xs sm:text-sm font-medium text-subtext hover:text-text transition-colors px-2 whitespace-nowrap">
-        Debt List <span className="opacity-50 text-[10px] ml-1">5</span>
-      </button>
-      <div className="w-px h-4 bg-border shrink-0"></div>
-      <button onClick={() => onNav('settings')} className="text-xs sm:text-sm font-medium text-subtext hover:text-text transition-colors px-2 whitespace-nowrap">
-        Settings <span className="opacity-50 text-[10px] ml-1">6</span>
+        Adiamentos <span className="opacity-50 text-[10px] ml-1">3</span>
       </button>
     </div>
   );

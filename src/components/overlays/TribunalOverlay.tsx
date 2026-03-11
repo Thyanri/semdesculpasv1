@@ -114,7 +114,7 @@ export function TribunalOverlay({ isOpen, onClose, caseItem, onVerdict }: Tribun
       <div className="flex flex-col h-full max-w-3xl mx-auto w-full">
         <header className="pb-6 border-b border-border flex justify-between items-center shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-text">Tribunal</h2>
+            <h2 className="text-xl font-bold text-text">Adiamento</h2>
             <p className="text-sm text-subtext mt-1">{caseItem.title}</p>
           </div>
           <div className="flex gap-2">
@@ -133,7 +133,7 @@ export function TribunalOverlay({ isOpen, onClose, caseItem, onVerdict }: Tribun
         <div className="flex-1 py-8 overflow-y-auto">
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-              <h2 className="text-2xl font-bold text-text">PROMOTOR</h2>
+              <h2 className="text-2xl font-bold text-text">AÇÃO</h2>
               <p className="text-subtext font-mono">Qual é o próximo passo físico?</p>
               <input 
                 type="text"
@@ -147,7 +147,7 @@ export function TribunalOverlay({ isOpen, onClose, caseItem, onVerdict }: Tribun
 
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-              <h2 className="text-2xl font-bold text-text">DEFESA</h2>
+              <h2 className="text-2xl font-bold text-text">OBSTÁCULO</h2>
               <p className="text-subtext font-mono">Qual é a desculpa real?</p>
               
               <select 
@@ -173,7 +173,7 @@ export function TribunalOverlay({ isOpen, onClose, caseItem, onVerdict }: Tribun
 
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-              <h2 className="text-2xl font-bold text-text">JUIZ</h2>
+              <h2 className="text-2xl font-bold text-text">REFLEXÃO</h2>
               <p className="text-subtext font-mono">Escolha uma pergunta.</p>
               
               <input 
@@ -209,8 +209,8 @@ export function TribunalOverlay({ isOpen, onClose, caseItem, onVerdict }: Tribun
 
           {step === 4 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-              <h2 className="text-2xl font-bold text-text">SENTENÇA</h2>
-              <p className="text-subtext font-mono">Decida.</p>
+              <h2 className="text-2xl font-bold text-text">DECISÃO</h2>
+              <p className="text-subtext font-mono">O que fazer agora?</p>
               
               {!showScheduleForm ? (
                 <div className="space-y-4">

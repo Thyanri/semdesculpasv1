@@ -15,7 +15,6 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
   const [loading, setLoading] = useState(true);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Manual tab state
   const [title, setTitle] = useState('');
   const [step, setStep] = useState('');
   const titleRef = useRef<HTMLInputElement>(null);
@@ -93,19 +92,18 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/60 backdrop-blur-sm p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-md bg-panel border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
       >
-        {/* Tab Header */}
-        <div className="p-4 border-b border-white/10">
+        <div className="p-4 border-b border-border">
           <div className="flex gap-1 mb-3">
             <button
               onClick={() => setTab('templates')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                tab === 'templates' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:text-zinc-300'
+                tab === 'templates' ? 'bg-accent/20 text-accent' : 'text-subtext hover:text-text'
               }`}
             >
               Templates
@@ -113,31 +111,30 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
             <button
               onClick={() => setTab('manual')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                tab === 'manual' ? 'bg-white/10 text-white' : 'text-zinc-400 hover:text-zinc-300'
+                tab === 'manual' ? 'bg-accent/20 text-accent' : 'text-subtext hover:text-text'
               }`}
             >
               Manual
             </button>
           </div>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-subtext">
             {tab === 'templates' ? 'Selecione um template (Enter para criar, Tab para manual)' : 'Crie um caso manualmente'}
           </p>
         </div>
 
-        {/* Templates Tab */}
         {tab === 'templates' && (
           <div className="overflow-y-auto p-2">
             {loading ? (
-              <p className="text-zinc-500 p-4 text-center">Carregando...</p>
+              <p className="text-subtext p-4 text-center">Carregando...</p>
             ) : templates.length === 0 ? (
-              <p className="text-zinc-500 p-4 text-center">Nenhum template encontrado.</p>
+              <p className="text-subtext p-4 text-center">Nenhum template encontrado.</p>
             ) : (
               <ul ref={listRef} className="space-y-1">
                 {templates.map((t, i) => (
                   <li
                     key={t.id}
                     className={`p-3 rounded-xl cursor-pointer flex justify-between items-center ${
-                      i === selectedIndex ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5'
+                      i === selectedIndex ? 'bg-accent/15 text-text' : 'text-subtext hover:bg-bg'
                     }`}
                     onClick={async () => {
                       await repository.createCase({
@@ -164,39 +161,38 @@ export function QuickAddOverlay({ onClose, onCreated }: QuickAddOverlayProps) {
           </div>
         )}
 
-        {/* Manual Tab */}
         {tab === 'manual' && (
           <div className="p-4">
             <form onSubmit={handleManualSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-400 mb-1.5 uppercase tracking-widest">O que é?</label>
+                <label className="block text-xs font-mono text-subtext mb-1.5 uppercase tracking-widest">O que é?</label>
                 <input
                   ref={titleRef}
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   placeholder="Ex: Terminar relatório"
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-white/30 transition-colors"
+                  className="w-full bg-bg border border-border rounded-xl px-4 py-3 text-text placeholder-subtext focus:outline-none focus:border-subtext transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-xs font-mono text-zinc-400 mb-1.5 uppercase tracking-widest">Próximo passo físico?</label>
+                <label className="block text-xs font-mono text-subtext mb-1.5 uppercase tracking-widest">Próximo passo físico?</label>
                 <input
                   type="text"
                   value={step}
                   onChange={e => setStep(e.target.value)}
                   placeholder="Ex: Abrir Excel"
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-white/30 transition-colors"
+                  className="w-full bg-bg border border-border rounded-xl px-4 py-3 text-text placeholder-subtext focus:outline-none focus:border-subtext transition-colors"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-zinc-400 hover:text-white transition-colors">
+                <button type="button" onClick={onClose} className="px-5 py-2 text-sm text-subtext hover:text-text transition-colors">
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={!title.trim() || !step.trim()}
-                  className="px-5 py-2 text-sm bg-white/10 text-white hover:bg-white/20 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="px-5 py-2 text-sm bg-accent text-bg rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   Criar (Enter)
                 </button>

@@ -49,15 +49,15 @@ export function ModeSelectorOverlay({ onClose, currentMode, onModeChange }: Mode
   }, [selectedIndex, onClose, onModeChange]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/60 backdrop-blur-sm p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="w-full max-w-md bg-panel border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
       >
-        <div className="p-4 border-b border-white/10">
-          <h2 className="text-lg font-medium text-white">Modo de Foco</h2>
-          <p className="text-sm text-zinc-400">Selecione o modo de operação (Enter para confirmar)</p>
+        <div className="p-4 border-b border-border">
+          <h2 className="text-lg font-medium text-text">Modo de Foco</h2>
+          <p className="text-sm text-subtext">Selecione o modo de operação (Enter para confirmar)</p>
         </div>
 
         <div className="p-2 space-y-1">
@@ -65,7 +65,7 @@ export function ModeSelectorOverlay({ onClose, currentMode, onModeChange }: Mode
             <div
               key={m.id}
               className={`p-3 rounded-xl cursor-pointer flex flex-col ${
-                i === selectedIndex ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5'
+                i === selectedIndex ? 'bg-accent/15 text-text' : 'text-subtext hover:bg-bg'
               }`}
               onClick={async () => {
                 await repository.updateUser({ settings: { ...(await repository.getOrCreateUser()).settings, mode: m.id } });
@@ -75,7 +75,7 @@ export function ModeSelectorOverlay({ onClose, currentMode, onModeChange }: Mode
             >
               <div className="font-medium flex items-center gap-2">
                 {m.name}
-                {m.id === currentMode && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded text-white">ATUAL</span>}
+                {m.id === currentMode && <span className="text-[10px] bg-accent/20 px-1.5 py-0.5 rounded text-accent">ATUAL</span>}
               </div>
               <div className="text-xs opacity-60 mt-1">{m.desc}</div>
             </div>

@@ -19,7 +19,6 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
   useEffect(() => {
     if (!isOpen) return;
     
-    // If we have a roomId, listen to it
     if (roomId) {
       const unsub = syncService.listenRoom(roomId, (r, m) => {
         setRoom(r);
@@ -36,7 +35,7 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
       setRoomId(newRoomId);
     } catch (e) {
       console.error(e);
-      alert("Failed to create room");
+      alert("Falha ao criar sala");
     } finally {
       setLoading(false);
     }
@@ -50,7 +49,7 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
       setRoomId(joinId);
     } catch (e) {
       console.error(e);
-      alert("Failed to join room");
+      alert("Falha ao entrar na sala");
     } finally {
       setLoading(false);
     }
@@ -66,7 +65,7 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
   };
 
   const handleStart = async () => {
-    if (roomId && room?.hostUid === auth.currentUser?.uid) {
+    if (roomId && room?.hostUid === auth?.currentUser?.uid) {
       await syncService.startRoom(roomId);
     }
   };
@@ -79,7 +78,7 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         <motion.div
@@ -87,18 +86,18 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#111] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+          className="bg-panel border border-border rounded-2xl p-6 w-full max-w-md shadow-2xl"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/5 rounded-lg">
-                <Users className="w-5 h-5 text-gray-300" />
+              <div className="p-2 bg-bg rounded-lg">
+                <Users className="w-5 h-5 text-text" />
               </div>
-              <h2 className="text-xl font-medium text-white">Co-op Session</h2>
+              <h2 className="text-xl font-medium text-text">Sessão Co-op</h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              className="p-2 text-subtext hover:text-text hover:bg-bg rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -106,84 +105,84 @@ export const CoopOverlay: React.FC<CoopOverlayProps> = ({ isOpen, onClose }) => 
 
           {!roomId ? (
             <div className="space-y-6">
-              <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                <h3 className="text-sm font-medium text-white mb-2">Create Room</h3>
-                <p className="text-xs text-gray-400 mb-4">Start a new focus session and invite others.</p>
+              <div className="p-4 bg-bg rounded-xl border border-border">
+                <h3 className="text-sm font-medium text-text mb-2">Criar Sala</h3>
+                <p className="text-xs text-subtext mb-4">Inicie uma sessão de foco e convide outros.</p>
                 <button
                   onClick={handleCreate}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 py-2 bg-accent text-bg rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   <Plus className="w-4 h-4" />
-                  {loading ? 'Creating...' : 'Create Room'}
+                  {loading ? 'Criando...' : 'Criar Sala'}
                 </button>
               </div>
 
-              <div className="p-4 bg-white/5 rounded-xl border border-white/5">
-                <h3 className="text-sm font-medium text-white mb-2">Join Room</h3>
-                <p className="text-xs text-gray-400 mb-4">Enter a room ID to join an existing session.</p>
+              <div className="p-4 bg-bg rounded-xl border border-border">
+                <h3 className="text-sm font-medium text-text mb-2">Entrar em Sala</h3>
+                <p className="text-xs text-subtext mb-4">Insira o ID da sala para participar.</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={joinId}
                     onChange={(e) => setJoinId(e.target.value)}
-                    placeholder="Room ID"
-                    className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                    placeholder="ID da Sala"
+                    className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text focus:outline-none focus:border-subtext"
                   />
                   <button
                     onClick={handleJoin}
                     disabled={loading || !joinId}
-                    className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-accent/20 text-accent rounded-lg font-medium hover:bg-accent/30 transition-colors disabled:opacity-50"
                   >
-                    Join
+                    Entrar
                   </button>
                 </div>
               </div>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="text-center p-6 bg-white/5 rounded-xl border border-white/5">
-                <div className="text-sm text-gray-400 mb-1">Room ID</div>
-                <div className="font-mono text-lg text-white tracking-wider select-all">{roomId}</div>
+              <div className="text-center p-6 bg-bg rounded-xl border border-border">
+                <div className="text-sm text-subtext mb-1">ID da Sala</div>
+                <div className="font-mono text-lg text-text tracking-wider select-all">{roomId}</div>
                 <div className="mt-4 flex items-center justify-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${room?.status === 'active' ? 'bg-emerald-500' : 'bg-yellow-500'}`} />
-                  <span className="text-sm text-gray-300 capitalize">{room?.status || 'idle'}</span>
+                  <span className="text-sm text-text capitalize">{room?.status || 'aguardando'}</span>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wider">Participants ({members.length})</h3>
+                <h3 className="text-sm font-medium text-subtext mb-3 uppercase tracking-wider">Participantes ({members.length})</h3>
                 <div className="space-y-2">
                   {members.map(m => (
-                    <div key={m.uid} className="flex items-center justify-between p-3 bg-black/50 rounded-lg border border-white/5">
+                    <div key={m.uid} className="flex items-center justify-between p-3 bg-bg rounded-lg border border-border">
                       <div className="flex items-center gap-3">
-                        <div className={`w-2 h-2 rounded-full ${m.presence === 'active' ? 'bg-emerald-500' : 'bg-gray-500'}`} />
-                        <span className="text-sm text-white font-medium">{m.uid === auth.currentUser?.uid ? 'You' : m.uid.substring(0, 8)}</span>
+                        <div className={`w-2 h-2 rounded-full ${m.presence === 'active' ? 'bg-emerald-500' : 'bg-subtext'}`} />
+                        <span className="text-sm text-text font-medium">{m.uid === auth?.currentUser?.uid ? 'Você' : m.uid.substring(0, 8)}</span>
                       </div>
                       {m.uid === room?.hostUid && (
-                        <span className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">Host</span>
+                        <span className="text-xs text-subtext bg-bg px-2 py-1 rounded border border-border">Host</span>
                       )}
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-white/10">
-                {room?.hostUid === auth.currentUser?.uid && room?.status === 'idle' && (
+              <div className="flex gap-3 pt-4 border-t border-border">
+                {room?.hostUid === auth?.currentUser?.uid && room?.status === 'idle' && (
                   <button
                     onClick={handleStart}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-emerald-500 text-black rounded-lg font-medium hover:bg-emerald-400 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-accent text-bg rounded-lg font-medium hover:opacity-90 transition-opacity"
                   >
                     <Play className="w-4 h-4" />
-                    Start Session
+                    Iniciar Sessão
                   </button>
                 )}
                 <button
                   onClick={handleLeave}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 py-2 bg-danger/20 text-danger rounded-lg font-medium hover:bg-danger/30 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                  Leave Room
+                  Sair da Sala
                 </button>
               </div>
             </div>

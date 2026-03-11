@@ -1,0 +1,118 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+    function isFriend(userId) {
+      // In a real app, we'd check the friendships collection or a friends array on the user document.
+      // For simplicity in rules without complex queries, assuming friends array exists on user doc.
+      let userDoc = get(/databases/$(database)/documents/users/$(userId));
+      return userDoc != null && 'friends' in userDoc.data && request.auth.uid in userDoc.data.friends;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUserProfile(data) {
+      return data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
+             data.handle is string && data.handle.size() >= 3 && data.handle.size() <= 20 &&
+             data.privacy in ['private', 'friends', 'public'] &&
+             data.createdAt is string &&
+             data.updatedAt is string;
+    }
+
+    function isValidFriendship(data) {
+      return data.user1Id is string && data.user1Id.size() > 0 &&
+             data.user2Id is string && data.user2Id.size() > 0 &&
+             data.status in ['pending', 'accepted', 'blocked'] &&
+             data.actionUserId is string && data.actionUserId.size() > 0 &&
+             data.createdAt is string &&
+             data.updatedAt is string;
+    }
+
+    function isValidUserEvent(data) {
+      return data.uid is string && data.uid == request.auth.uid &&
+             data.type in ['start2min', 'delayVerdict', 'deepSession', 'distractionLog'] &&
+             data.timestamp is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data) && uidUnchanged();
+      allow update: if isOwner(userId) && isValidUserProfile(request.resource.data) && uidNotModified();
+    }
+
+    match /friendships/{friendshipId} {
+      allow read: if isAuthenticated() && (resource.data.user1Id == request.auth.uid || resource.data.user2Id == request.auth.uid);
+      allow create: if isAuthenticated() && 
+                    (request.resource.data.user1Id == request.auth.uid || request.resource.data.user2Id == request.auth.uid) &&
+                    request.resource.data.actionUserId == request.auth.uid &&
+                    request.resource.data.status == 'pending' &&
+                    isValidFriendship(request.resource.data);
+      allow update: if isAuthenticated() && 
+                    (resource.data.user1Id == request.auth.uid || resource.data.user2Id == request.auth.uid) &&
+                    request.resource.data.actionUserId == request.auth.uid &&
+                    isValidFriendship(request.resource.data);
+    }
+
+    match /events/{eventId} {
+      allow read: if isOwner(resource.data.uid);
+      allow create: if isOwner(request.resource.data.uid) && isValidUserEvent(request.resource.data);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    match /leaderboards/{leaderboardId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.hostUid == request.auth.uid;
+      allow update: if isAuthenticated() && (resource.data.hostUid == request.auth.uid || request.resource.data.hostUid == resource.data.hostUid);
+      allow delete: if isAuthenticated() && resource.data.hostUid == request.auth.uid;
+      
+      match /members/{memberId} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    match /leagueMembers/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    match /communityPacks/{packId} {
+      allow read: if isAuthenticated() && resource.data.isPublic == true;
+      allow write: if false;
+    }
+
+    match /templates/{templateId} {
+      allow read: if isAuthenticated() && resource.data.moderation.status == 'approved';
+      allow write: if false;
+    }
+
+    match /replays/{userId}/{weekId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+  }
+}

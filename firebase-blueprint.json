@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile and social metrics",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "handle": { "type": "string", "description": "Unique user handle" },
+        "displayName": { "type": "string", "description": "Display name" },
+        "photoURL": { "type": "string", "description": "Avatar URL" },
+        "privacy": { "type": "string", "enum": ["private", "friends", "public"], "description": "Privacy setting" },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "streak": { "type": "number" },
+            "activeDays7d": { "type": "number" },
+            "starts7d": { "type": "number" },
+            "facedDelays7d": { "type": "number" },
+            "deepMinutes7d": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "handle", "privacy", "createdAt", "updatedAt"]
+    },
+    "Friendship": {
+      "title": "Friendship",
+      "description": "Friendship relationship between two users",
+      "type": "object",
+      "properties": {
+        "user1Id": { "type": "string" },
+        "user2Id": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "blocked"] },
+        "actionUserId": { "type": "string", "description": "User who initiated the last action" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user1Id", "user2Id", "status", "actionUserId", "createdAt", "updatedAt"]
+    },
+    "UserEvent": {
+      "title": "UserEvent",
+      "description": "Log of user actions for aggregation",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "type": { "type": "string", "enum": ["start2min", "delayVerdict", "deepSession", "distractionLog"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "data": { "type": "object", "description": "Optional payload for the event" }
+      },
+      "required": ["uid", "type", "timestamp"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Aggregated leaderboard entry",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "category": { "type": "string", "enum": ["streak", "consistency", "courage", "focus"] },
+        "period": { "type": "string", "enum": ["weekly", "monthly", "allTime"] },
+        "score": { "type": "number" },
+        "rank": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "category", "period", "score", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles"
+    },
+    "/friendships/{friendshipId}": {
+      "schema": { "$ref": "#/entities/Friendship" },
+      "description": "Friendship relationships"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/UserEvent" },
+      "description": "User events log"
+    },
+    "/leaderboards/{leaderboardId}": {
+      "schema": { "$ref": "#/entities/LeaderboardEntry" },
+      "description": "Leaderboard entries"
+    }
+  }
+}

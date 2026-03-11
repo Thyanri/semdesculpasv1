@@ -170,7 +170,7 @@ export function TimerOverlay({ isOpen, onClose, caseItem, onComplete, onTimeUp, 
             <div className="text-8xl sm:text-9xl font-mono font-bold text-text tracking-tighter animate-in zoom-in-95 relative">
               {mins}:{secs.toString().padStart(2, '0')}
               {sprintPrompt && (
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-red-500 text-white text-sm px-4 py-1 rounded-full animate-bounce font-sans">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-danger text-bg text-sm px-4 py-1 rounded-full animate-bounce font-sans">
                   Volta pro passo!
                 </div>
               )}

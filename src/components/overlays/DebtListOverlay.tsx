@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileWarning, CheckCircle2, Plus, Trash2 } from 'lucide-react';
+import { X, FileWarning, CheckCircle2, Plus } from 'lucide-react';
 import { repository } from '../../data/store';
 import { DebtItem } from '../../domain/models';
 
@@ -56,7 +56,7 @@ export const DebtListOverlay: React.FC<DebtListOverlayProps> = ({ isOpen, onClos
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         <motion.div
@@ -64,21 +64,21 @@ export const DebtListOverlay: React.FC<DebtListOverlayProps> = ({ isOpen, onClos
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-[#111] border border-white/10 rounded-2xl p-6 w-full max-w-2xl shadow-2xl h-[80vh] flex flex-col"
+          className="bg-panel border border-border rounded-2xl p-6 w-full max-w-2xl shadow-2xl h-[80vh] flex flex-col"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-500/10 rounded-lg">
-                <FileWarning className="w-5 h-5 text-red-500" />
+              <div className="p-2 bg-danger/10 rounded-lg">
+                <FileWarning className="w-5 h-5 text-danger" />
               </div>
               <div>
-                <h2 className="text-xl font-medium text-white">Debt List</h2>
-                <p className="text-sm text-gray-400">Tasks you owe yourself</p>
+                <h2 className="text-xl font-medium text-text">Lista de Dívidas</h2>
+                <p className="text-sm text-subtext">Tarefas que você deve focar</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              className="p-2 text-subtext hover:text-text hover:bg-bg rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -89,50 +89,50 @@ export const DebtListOverlay: React.FC<DebtListOverlayProps> = ({ isOpen, onClos
               type="text"
               value={newDebtTitle}
               onChange={(e) => setNewDebtTitle(e.target.value)}
-              placeholder="What do you owe?"
-              className="flex-1 bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+              placeholder="Qual é a dívida?"
+              className="flex-1 bg-bg border border-border rounded-lg px-4 py-2 text-sm text-text focus:outline-none focus:border-subtext"
             />
-            <div className="flex items-center gap-2 bg-black/50 border border-white/10 rounded-lg px-3">
-              <span className="text-xs text-gray-500">Cost:</span>
+            <div className="flex items-center gap-2 bg-bg border border-border rounded-lg px-3">
+              <span className="text-xs text-subtext">Custo:</span>
               <input
                 type="number"
                 min="1"
                 max="10"
                 value={newDebtCost}
                 onChange={(e) => setNewDebtCost(parseInt(e.target.value) || 1)}
-                className="w-12 bg-transparent text-sm text-white focus:outline-none text-center"
+                className="w-12 bg-transparent text-sm text-text focus:outline-none text-center"
               />
             </div>
             <button
               type="submit"
               disabled={!newDebtTitle.trim()}
-              className="px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 bg-accent text-bg rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Add
+              Adicionar
             </button>
           </form>
 
           <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-6">
             <div>
-              <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Pending Debts ({pendingDebts.length})</h3>
+              <h3 className="text-sm font-medium text-subtext uppercase tracking-wider mb-3">Dívidas Pendentes ({pendingDebts.length})</h3>
               {pendingDebts.length === 0 ? (
-                <div className="text-center py-8 bg-white/5 rounded-xl border border-white/5 border-dashed">
-                  <p className="text-sm text-gray-500">You have no pending debts. Great job!</p>
+                <div className="text-center py-8 bg-panel rounded-xl border border-border border-dashed">
+                  <p className="text-sm text-subtext">Você não tem dívidas pendentes. Bom trabalho!</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {pendingDebts.map(debt => (
-                    <div key={debt.id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-white/20 transition-colors">
+                    <div key={debt.id} className="flex items-center justify-between p-4 bg-panel rounded-xl border border-border hover:border-text/30 transition-colors">
                       <div>
-                        <h4 className="text-white font-medium">{debt.title}</h4>
-                        <p className="text-xs text-gray-400 mt-1">Cost: {debt.costInSessions} session{debt.costInSessions > 1 ? 's' : ''}</p>
+                        <h4 className="text-text font-medium">{debt.title}</h4>
+                        <p className="text-xs text-subtext mt-1">Custo: {debt.costInSessions} sess{debt.costInSessions > 1 ? 'ões' : 'ão'}</p>
                       </div>
                       <button
                         onClick={() => handlePayDebt(debt.id)}
-                        className="px-4 py-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-black rounded-lg text-sm font-medium transition-colors"
+                        className="px-4 py-2 bg-accent/10 text-accent hover:bg-accent hover:text-bg rounded-lg text-sm font-medium transition-colors"
                       >
-                        Pay Debt
+                        Pagar
                       </button>
                     </div>
                   ))}
@@ -142,15 +142,15 @@ export const DebtListOverlay: React.FC<DebtListOverlayProps> = ({ isOpen, onClos
 
             {paidDebts.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Paid Debts</h3>
+                <h3 className="text-sm font-medium text-subtext uppercase tracking-wider mb-3">Dívidas Pagas</h3>
                 <div className="space-y-2 opacity-60">
                   {paidDebts.map(debt => (
-                    <div key={debt.id} className="flex items-center justify-between p-3 bg-black/50 rounded-xl border border-white/5">
+                    <div key={debt.id} className="flex items-center justify-between p-3 bg-bg rounded-xl border border-border">
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        <span className="text-gray-300 line-through">{debt.title}</span>
+                        <span className="text-text/80 line-through">{debt.title}</span>
                       </div>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-subtext">
                         {new Date(debt.paidAt!).toLocaleDateString()}
                       </span>
                     </div>

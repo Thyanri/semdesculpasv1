@@ -31,14 +31,14 @@ export function DistractionLogOverlay({ caseId, onClose }: DistractionLogOverlay
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-bg/60 backdrop-blur-sm p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: -20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-sm bg-zinc-900 border border-red-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col p-6"
+        className="w-full max-w-sm bg-panel border border-danger/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col p-6"
       >
-        <h2 className="text-lg font-medium text-white mb-2">Distração</h2>
-        <p className="text-sm text-zinc-400 mb-4">O que te puxou?</p>
+        <h2 className="text-lg font-medium text-text mb-2">Distração</h2>
+        <p className="text-sm text-subtext mb-4">O que te puxou?</p>
         
         <form onSubmit={handleSubmit}>
           <input
@@ -46,21 +46,21 @@ export function DistractionLogOverlay({ caseId, onClose }: DistractionLogOverlay
             type="text"
             value={text}
             onChange={e => setText(e.target.value)}
-            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
-            placeholder="Ex: WhatsApp, Instagram, sede..."
+            className="w-full bg-bg border border-border rounded-xl px-4 py-3 text-text placeholder-subtext focus:outline-none focus:border-danger/50 focus:ring-1 focus:ring-danger/50 transition-all"
+            placeholder="Ex: WhatsApp, Instagram, celular..."
             autoComplete="off"
           />
           <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-subtext hover:text-text transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm bg-danger/20 text-danger hover:bg-danger/30 rounded-lg transition-colors"
             >
               Registrar
             </button>

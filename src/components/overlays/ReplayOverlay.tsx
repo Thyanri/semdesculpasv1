@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, PlayCircle, Calendar, Share2, Download, TrendingUp, Clock, Target } from 'lucide-react';
 import { syncService } from '../../services/SyncService';
+import { auth } from '../../firebase';
 
 interface ReplayOverlayProps {
   isOpen: boolean;
@@ -70,6 +71,10 @@ export const ReplayOverlay: React.FC<ReplayOverlayProps> = ({ isOpen, onClose })
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {!auth?.currentUser && !loading && (
+            <div className="text-center mb-6 py-2 bg-text/10 rounded-lg text-subtext text-xs uppercase tracking-widest font-mono">Modo Offline Simulado</div>
+          )}
 
           {loading ? (
             <div className="flex justify-center py-12">

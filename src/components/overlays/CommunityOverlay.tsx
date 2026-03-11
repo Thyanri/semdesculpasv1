@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Globe, Download, Star, Search } from 'lucide-react';
 import { syncService } from '../../services/SyncService';
+import { auth } from '../../firebase';
 
 interface CommunityOverlayProps {
   isOpen: boolean;
@@ -81,6 +82,10 @@ export const CommunityOverlay: React.FC<CommunityOverlayProps> = ({ isOpen, onCl
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {!auth?.currentUser && !loading && (
+            <div className="text-center mb-4 py-2 bg-text/10 rounded-lg text-subtext text-xs uppercase tracking-widest font-mono">Modo Offline Simulado</div>
+          )}
 
           <div className="flex items-center gap-4 mb-6">
             <div className="flex bg-bg p-1 rounded-lg border border-border">

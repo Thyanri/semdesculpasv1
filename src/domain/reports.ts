@@ -90,7 +90,11 @@ export function computeReports(
   const completedCasesByDay: Record<string, number> = {};
   cases.forEach(c => {
     if (c.status === 'done' && c.updatedAt >= range.startISO && c.updatedAt <= range.endISO) {
-      const day = c.updatedAt.split('T')[0];
+      const d = new Date(c.updatedAt);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(d.getDate()).padStart(2, '0');
+      const day = `${year}-${month}-${dayStr}`;
       completedCasesByDay[day] = (completedCasesByDay[day] || 0) + 1;
     }
   });

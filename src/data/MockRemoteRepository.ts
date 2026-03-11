@@ -144,7 +144,12 @@ export class MockRemoteRepository implements AppRepository {
   async updateStreak(activityDateISO: string): Promise<Streak> {
     await delay(200);
     const streak = await this.getStreak();
-    const activityDate = activityDateISO.split('T')[0];
+    
+    const d = new Date(activityDateISO);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(d.getDate()).padStart(2, '0');
+    const activityDate = `${year}-${month}-${dayStr}`;
     
     if (streak.lastActiveDate === activityDate) return streak;
     

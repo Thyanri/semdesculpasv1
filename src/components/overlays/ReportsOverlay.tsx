@@ -18,31 +18,36 @@ export function ReportsOverlay({ isOpen, onClose, user }: { isOpen: boolean, onC
     if (!isOpen || !user) return;
     const loadData = async () => {
       setIsLoading(true);
-      const end = new Date();
-      const start = new Date();
-      start.setDate(end.getDate() - daysRange);
-      
-      const startISO = start.toISOString();
-      const endISO = end.toISOString();
+      try {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - daysRange);
+        
+        const startISO = start.toISOString();
+        const endISO = end.toISOString();
 
-      const sessions = await repository.listSessionsByDateRange(startISO, endISO);
-      const allCases = await repository.listCases();
-      
-      const computed = computeReports(sessions, allCases, { startISO, endISO });
-      setReports(computed);
+        const sessions = await repository.listSessionsByDateRange(startISO, endISO);
+        const allCases = await repository.listCases();
+        
+        const computed = computeReports(sessions, allCases, { startISO, endISO });
+        setReports(computed);
 
-      // Daily progress data
-      const today = new Date().toISOString().split('T')[0];
-      const progress90d = await repository.listDailyProgressByRange(daysAgo(90), today);
-      const progress30d = progress90d.filter(p => p.date >= daysAgo(30));
-      const progress7d = progress30d.filter(p => p.date >= daysAgo(7));
+        // Daily progress data
+        const { todayStr } = await import('../../domain/dailyProgress');
+        const today = todayStr();
+        const progress90d = await repository.listDailyProgressByRange(daysAgo(90), today);
+        const progress30d = progress90d.filter(p => p.date >= daysAgo(30));
+        const progress7d = progress30d.filter(p => p.date >= daysAgo(7));
 
-      setQualityStreak(computeQualityStreak(progress90d));
-      setDominantTag(getDominantPlusOneTag(progress30d));
-      setEvo7d(computeAverageEvolution(progress7d));
-      setEvo30d(computeAverageEvolution(progress30d));
-
-      setIsLoading(false);
+        setQualityStreak(computeQualityStreak(progress90d));
+        setDominantTag(getDominantPlusOneTag(progress30d));
+        setEvo7d(computeAverageEvolution(progress7d));
+        setEvo30d(computeAverageEvolution(progress30d));
+      } catch (err) {
+        console.error("Error loading reports:", err);
+      } finally {
+        setIsLoading(false);
+      }
     };
     loadData();
   }, [isOpen, daysRange, user]);
@@ -111,7 +116,10 @@ export function ReportsOverlay({ isOpen, onClose, user }: { isOpen: boolean, onC
                 {Array.from({ length: daysRange }).map((_, i) => {
                   const d = new Date();
                   d.setDate(d.getDate() - (daysRange - 1 - i));
-                  const dateStr = d.toISOString().split('T')[0];
+                  const year = d.getFullYear();
+                  const month = String(d.getMonth() + 1).padStart(2, '0');
+                  const dayStr = String(d.getDate()).padStart(2, '0');
+                  const dateStr = `${year}-${month}-${dayStr}`;
                   const count = reports.completedCasesByDay[dateStr] || 0;
                   
                   let bgClass = 'bg-white/5';

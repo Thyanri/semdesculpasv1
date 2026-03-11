@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trophy, ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { Trophy, ArrowUp, ArrowDown, Minus, X } from 'lucide-react';
 import { syncService } from '../../services/SyncService';
+import { auth } from '../../firebase';
 
 interface LeagueOverlayProps {
   isOpen: boolean;
@@ -70,7 +71,12 @@ export const LeagueOverlay: React.FC<LeagueOverlayProps> = ({ isOpen, onClose })
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-border border-t-text rounded-full animate-spin" />
             </div>
-          ) : !leagueState ? (
+          ) : (
+            <div className="space-y-6">
+              {!auth?.currentUser && (
+                <div className="text-center py-2 bg-text/10 rounded-lg text-subtext text-xs uppercase tracking-widest font-mono">Modo Offline Simulado</div>
+              )}
+              {!leagueState ? (
             <div className="text-center py-12 bg-bg rounded-xl border border-border">
               <Trophy className="w-12 h-12 text-subtext mx-auto mb-4" />
               <h3 className="text-lg font-medium text-text mb-2">Sem Liga no Momento</h3>
@@ -149,6 +155,8 @@ export const LeagueOverlay: React.FC<LeagueOverlayProps> = ({ isOpen, onClose })
               </div>
             </div>
           )}
+          </div>
+        )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

@@ -16,10 +16,14 @@ interface ArenaProps {
 
 export function Arena({ cases, selectedCaseId, onSelectCase, onStartCase, onDelayCase, onCompleteCase, onQuickCreate, filter, onFilterChange, dailyMinimumDone, hasDailyMinimum }: ArenaProps) {
   const selectedCase = cases.find(c => c.id === selectedCaseId);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const localTodayStr = `${year}-${month}-${day}`;
 
-  const todayStr = new Date().toISOString().split('T')[0];
   const filteredCases = filter === 'today' 
-    ? cases.filter(c => c.nextDueDate && c.nextDueDate.split('T')[0] === todayStr)
+    ? cases.filter(c => c.nextDueDate && c.nextDueDate.split('T')[0] === localTodayStr)
     : cases;
 
   if (!selectedCase) {

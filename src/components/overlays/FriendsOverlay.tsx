@@ -24,23 +24,22 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
 
   const loadFriends = async () => {
     setLoading(true);
-    if (auth?.currentUser) {
-      const fs = await syncService.getFriendships();
-      setFriendships(fs);
-      
-      const uids = new Set<string>();
-      fs.forEach(f => {
-        if (f.user1Id !== auth.currentUser?.uid) uids.add(f.user1Id);
-        if (f.user2Id !== auth.currentUser?.uid) uids.add(f.user2Id);
-      });
+    const fs = await syncService.getFriendships();
+    setFriendships(fs);
+    
+    const uids = new Set<string>();
+    const currentUid = auth?.currentUser?.uid || 'local';
+    fs.forEach(f => {
+      if (f.user1Id !== currentUid) uids.add(f.user1Id);
+      if (f.user2Id !== currentUid) uids.add(f.user2Id);
+    });
 
-      const profs: Record<string, UserProfile> = {};
-      for (const uid of uids) {
-        const p = await syncService.getUserProfile(uid);
-        if (p) profs[uid] = p;
-      }
-      setProfiles(profs);
+    const profs: Record<string, UserProfile> = {};
+    for (const uid of uids) {
+      const p = await syncService.getUserProfile(uid);
+      if (p) profs[uid] = p;
     }
+    setProfiles(profs);
     setLoading(false);
   };
 
@@ -76,9 +75,10 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
   return (
     <ModalShell isOpen={isOpen} onClose={onClose} title="Amigos">
       <div className="space-y-8">
-        {!auth?.currentUser ? (
-          <div className="text-center py-8 text-subtext">Faça login no Perfil para adicionar amigos.</div>
-        ) : loading ? (
+        {!auth?.currentUser && !loading && (
+          <div className="text-center py-2 bg-text/10 rounded-lg text-subtext text-xs uppercase tracking-widest font-mono">Modo Offline Simulado</div>
+        )}
+        {loading ? (
           <div className="text-center py-8 text-subtext font-mono">Carregando...</div>
         ) : (
           <>
@@ -142,7 +142,8 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
               ) : (
                 <div className="space-y-2">
                   {acceptedFriends.map(f => {
-                    const uid = f.user1Id === auth.currentUser?.uid ? f.user2Id : f.user1Id;
+                    const currentUid = auth?.currentUser?.uid || 'local';
+                    const uid = f.user1Id === currentUid ? f.user2Id : f.user1Id;
                     const p = profiles[uid];
                     if (!p) return null;
                     return (

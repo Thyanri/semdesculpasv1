@@ -28,7 +28,9 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
       const p = await syncService.getUserProfile(auth.currentUser.uid);
       setProfile(p);
     } else {
-      setProfile(null);
+      // Offline fallback
+      const p = await syncService.getUserProfile('local');
+      setProfile(p);
     }
     setLoading(false);
   };
@@ -82,42 +84,7 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
       <div className="space-y-6">
         {loading ? (
           <div className="text-center py-8 text-subtext font-mono">Carregando...</div>
-        ) : !auth?.currentUser ? (
-          <div className="text-center py-8 space-y-4">
-            <p className="text-subtext">Faça login para sincronizar seus dados e acessar recursos sociais.</p>
-            <button 
-              onClick={handleLogin}
-              className="bg-accent text-bg px-6 py-2 rounded-lg font-bold hover:opacity-90 transition-opacity"
-            >
-              Login com Google
-            </button>
-          </div>
-        ) : !profile ? (
-          <form onSubmit={handleCreateProfile} className="space-y-4">
-            <p className="text-text font-medium">Crie seu perfil social</p>
-            <p className="text-sm text-subtext">Escolha um handle único para que seus amigos possam te encontrar.</p>
-            <div className="flex gap-2">
-              <span className="bg-bg border border-border rounded-l-lg px-4 py-2 text-subtext flex items-center">@</span>
-              <input
-                type="text"
-                value={handleInput}
-                onChange={e => setHandleInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                placeholder="seu_handle"
-                className="flex-1 bg-bg border border-border rounded-r-lg px-4 py-2 text-text outline-none focus:border-subtext"
-                required
-                minLength={3}
-                maxLength={20}
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={isCreating}
-              className="w-full bg-accent text-bg px-4 py-2 rounded-lg font-bold hover:opacity-90 disabled:opacity-50"
-            >
-              {isCreating ? 'Criando...' : 'Criar Perfil'}
-            </button>
-          </form>
-        ) : (
+        ) : profile ? (
           <div className="space-y-8">
             <div className="flex items-center gap-4">
               {profile.photoURL ? (
@@ -172,12 +139,56 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
               </p>
             </div>
 
-            <div className="pt-4 border-t border-border">
-              <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-400 transition-colors">
-                Sair da conta
-              </button>
+            <div className="pt-4 border-t border-border flex justify-between">
+              {auth?.currentUser && (
+                <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-400 transition-colors">
+                  Sair da conta
+                </button>
+              )}
+              {!profile && (
+                <button onClick={() => setProfile(null)} className="text-sm text-subtext hover:text-text transition-colors">
+                  Voltar
+                </button>
+              )}
             </div>
           </div>
+        ) : !auth?.currentUser ? (
+          <div className="text-center py-8 space-y-4">
+            <p className="text-subtext">Você está rodando localmente sem Firebase. Perfil offline ativado.</p>
+            <button 
+              onClick={() => {
+                syncService.getUserProfile('local').then(p => setProfile(p));
+              }}
+              className="bg-accent text-bg px-6 py-2 rounded-lg font-bold hover:opacity-90 transition-opacity"
+            >
+              Ver Perfil Offline
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleCreateProfile} className="space-y-4">
+            <p className="text-text font-medium">Crie seu perfil social</p>
+            <p className="text-sm text-subtext">Escolha um handle único para que seus amigos possam te encontrar.</p>
+            <div className="flex gap-2">
+              <span className="bg-bg border border-border rounded-l-lg px-4 py-2 text-subtext flex items-center">@</span>
+              <input
+                type="text"
+                value={handleInput}
+                onChange={e => setHandleInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                placeholder="seu_handle"
+                className="flex-1 bg-bg border border-border rounded-r-lg px-4 py-2 text-text outline-none focus:border-subtext"
+                required
+                minLength={3}
+                maxLength={20}
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={isCreating}
+              className="w-full bg-accent text-bg px-4 py-2 rounded-lg font-bold hover:opacity-90 disabled:opacity-50"
+            >
+              {isCreating ? 'Criando...' : 'Criar Perfil'}
+            </button>
+          </form>
         )}
       </div>
     </ModalShell>

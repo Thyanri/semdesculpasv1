@@ -1,16 +1,23 @@
 import { DailyProgress, MinimumType, PlusOneTag, TribunalSession } from './models';
 import { AppRepository } from './repository';
 
-// Helper: get today as YYYY-MM-DD
+// Helper: get today as YYYY-MM-DD in local time
 export function todayStr(): string {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-// Helper: get YYYY-MM-DD for N days ago
+// Helper: get YYYY-MM-DD for N days ago in local time
 export function daysAgo(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 // Check if the daily minimum was fulfilled by an event type
@@ -60,11 +67,15 @@ export function computeQualityStreak(progressList: DailyProgress[]): number {
   const sorted = [...progressList].sort((a, b) => b.date.localeCompare(a.date));
   let streak = 0;
   const today = todayStr();
+  const maxDays = 90; // Don't check more than reasonable amount
 
-  for (let i = 0; i < sorted.length; i++) {
+  for (let i = 0; i < maxDays; i++) {
     const expected = new Date();
     expected.setDate(expected.getDate() - i);
-    const expectedStr = expected.toISOString().split('T')[0];
+    const year = expected.getFullYear();
+    const month = String(expected.getMonth() + 1).padStart(2, '0');
+    const day = String(expected.getDate()).padStart(2, '0');
+    const expectedStr = `${year}-${month}-${day}`;
 
     const entry = sorted.find(p => p.date === expectedStr);
     if (!entry || !entry.minimumDone || !entry.plusOneTag) {

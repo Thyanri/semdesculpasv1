@@ -23,10 +23,6 @@ export function LeaderboardOverlay({ isOpen, onClose }: LeaderboardOverlayProps)
   }, [isOpen, category, period]);
 
   const loadLeaderboard = async () => {
-    if (!auth.currentUser) {
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     const data = await syncService.getLeaderboard(category, period);
     setEntries(data);
@@ -48,10 +44,10 @@ export function LeaderboardOverlay({ isOpen, onClose }: LeaderboardOverlayProps)
   return (
     <ModalShell isOpen={isOpen} onClose={onClose} title="Ranking Global">
       <div className="space-y-6">
-        {!auth.currentUser ? (
-          <div className="text-center py-8 text-subtext">Faça login no Perfil para acessar o Ranking Global.</div>
-        ) : (
-          <>
+        {!auth.currentUser && !loading && (
+          <div className="text-center py-2 bg-text/10 rounded-lg text-subtext text-xs uppercase tracking-widest font-mono">Modo Offline Simulado</div>
+        )}
+        <>
             <div className="flex gap-2 bg-bg p-1 rounded-lg border border-border">
               {(['streak', 'consistency', 'courage', 'focus'] as const).map(c => (
                 <button
@@ -85,7 +81,8 @@ export function LeaderboardOverlay({ isOpen, onClose }: LeaderboardOverlayProps)
                 {entries.map((entry, index) => {
                   const p = profiles[entry.uid];
                   if (!p) return null;
-                  const isMe = auth.currentUser?.uid === entry.uid;
+                  const currentUid = auth.currentUser?.uid || 'local';
+                  const isMe = currentUid === entry.uid;
                   return (
                     <div key={entry.uid} className={`flex items-center justify-between p-3 rounded-lg border ${isMe ? 'bg-accent/10 border-accent/30' : 'bg-bg border-border'}`}>
                       <div className="flex items-center gap-4">
@@ -122,7 +119,6 @@ export function LeaderboardOverlay({ isOpen, onClose }: LeaderboardOverlayProps)
               </div>
             )}
           </>
-        )}
       </div>
     </ModalShell>
   );

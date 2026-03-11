@@ -71,8 +71,8 @@ export class LocalRepository implements AppRepository {
   }
 
   async updateUser(patch: Partial<User>): Promise<User> {
-    const store = await this.getStore('users', 'readwrite');
     const existing = await this.getOrCreateUser();
+    const store = await this.getStore('users', 'readwrite');
     const updated = { ...existing, ...patch };
     await requestToPromise(store.put(updated));
     return updated;
@@ -185,7 +185,6 @@ export class LocalRepository implements AppRepository {
   }
 
   async updateStreak(activityDateISO: string): Promise<Streak> {
-    const store = await this.getStore('streaks', 'readwrite');
     const streak = await this.getStreak();
     
     const activityDate = activityDateISO.split('T')[0];
@@ -210,6 +209,8 @@ export class LocalRepository implements AppRepository {
     }
     
     streak.lastActiveDate = activityDate;
+    
+    const store = await this.getStore('streaks', 'readwrite');
     await requestToPromise(store.put(streak));
     return streak;
   }

@@ -1,7 +1,16 @@
 {
   "name": "semdesculpas",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "App de produtividade radical — pare de enrolar, comece em 2 minutos.",
+  "author": "Thyanri",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Thyanri/semdesculpasv1.git"
+  },
+  "homepage": "https://github.com/Thyanri/semdesculpasv1",
+  "keywords": ["produtividade", "react", "typescript", "firebase", "gamificação"],
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

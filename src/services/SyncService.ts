@@ -16,21 +16,23 @@ class SyncService {
       this.isOnline = false;
     });
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.syncPendingEvents();
-        this.startPeriodicSync();
-      } else {
-        this.stopPeriodicSync();
-      }
-    });
+    if (auth) {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.syncPendingEvents();
+          this.startPeriodicSync();
+        } else {
+          this.stopPeriodicSync();
+        }
+      });
+    }
   }
 
   private startPeriodicSync() {
     if (this.syncInterval) clearInterval(this.syncInterval);
     this.syncInterval = setInterval(() => {
       this.syncPendingEvents();
-    }, 60000); // Sync every minute
+    }, 60000);
   }
 
   private stopPeriodicSync() {
@@ -41,7 +43,7 @@ class SyncService {
   }
 
   async syncPendingEvents() {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
 
     const pendingEvents = await repository.getPendingEvents();
     if (pendingEvents.length === 0) return;
@@ -52,7 +54,7 @@ class SyncService {
     for (const event of pendingEvents) {
       const docRef = doc(eventsRef, event.id);
       batch.set(docRef, {
-        uid: auth.currentUser.uid,
+        uid: auth.currentUser!.uid,
         type: event.type,
         timestamp: event.timestamp,
         data: event.data || {}
@@ -70,7 +72,7 @@ class SyncService {
   async logEvent(type: UserEvent['type'], data?: any) {
     const event: UserEvent = {
       id: crypto.randomUUID(),
-      uid: auth.currentUser?.uid || 'local',
+      uid: auth?.currentUser?.uid || 'local',
       type,
       timestamp: new Date().toISOString(),
       data,
@@ -82,7 +84,7 @@ class SyncService {
   }
 
   async getUserProfile(uid: string): Promise<UserProfile | null> {
-    if (!this.isOnline) return null;
+    if (!this.isOnline || !db) return null;
     try {
       const docRef = doc(db, 'users', uid);
       const docSnap = await getDoc(docRef);
@@ -97,7 +99,7 @@ class SyncService {
   }
 
   async getProfileByHandle(handle: string): Promise<UserProfile | null> {
-    if (!this.isOnline) return null;
+    if (!this.isOnline || !db) return null;
     try {
       const q = query(collection(db, 'users'), where('handle', '==', handle));
       const querySnapshot = await getDocs(q);
@@ -112,7 +114,7 @@ class SyncService {
   }
 
   async updateProfile(updates: Partial<UserProfile>) {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const docRef = doc(db, 'users', auth.currentUser.uid);
     await updateDoc(docRef, {
       ...updates,
@@ -121,7 +123,7 @@ class SyncService {
   }
 
   async createProfile(handle: string, displayName: string) {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const docRef = doc(db, 'users', auth.currentUser.uid);
     const profile: UserProfile = {
       uid: auth.currentUser.uid,
@@ -145,13 +147,12 @@ class SyncService {
   }
 
   async sendFriendRequest(targetHandle: string) {
-    if (!this.isOnline || !auth.currentUser) throw new Error("Offline or not logged in");
+    if (!this.isOnline || !auth?.currentUser || !db) throw new Error("Offline or not logged in");
     
     const targetProfile = await this.getProfileByHandle(targetHandle);
     if (!targetProfile) throw new Error("User not found");
     if (targetProfile.uid === auth.currentUser.uid) throw new Error("Cannot add yourself");
 
-    // Check if friendship already exists
     const q1 = query(collection(db, 'friendships'), where('user1Id', '==', auth.currentUser.uid), where('user2Id', '==', targetProfile.uid));
     const q2 = query(collection(db, 'friendships'), where('user1Id', '==', targetProfile.uid), where('user2Id', '==', auth.currentUser.uid));
     
@@ -175,7 +176,7 @@ class SyncService {
   }
 
   async acceptFriendRequest(friendshipId: string, targetUid: string) {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const docRef = doc(db, 'friendships', friendshipId);
     await updateDoc(docRef, {
       status: 'accepted',
@@ -183,7 +184,6 @@ class SyncService {
       updatedAt: new Date().toISOString()
     });
 
-    // Add to friends array in both profiles
     const myProfileRef = doc(db, 'users', auth.currentUser.uid);
     const targetProfileRef = doc(db, 'users', targetUid);
     
@@ -205,7 +205,7 @@ class SyncService {
   }
 
   async getFriendships(): Promise<Friendship[]> {
-    if (!this.isOnline || !auth.currentUser) return [];
+    if (!this.isOnline || !auth?.currentUser || !db) return [];
     try {
       const q1 = query(collection(db, 'friendships'), where('user1Id', '==', auth.currentUser.uid));
       const q2 = query(collection(db, 'friendships'), where('user2Id', '==', auth.currentUser.uid));
@@ -223,7 +223,7 @@ class SyncService {
   }
 
   async getLeaderboard(category: string, period: string): Promise<LeaderboardEntry[]> {
-    if (!this.isOnline || !auth.currentUser) return [];
+    if (!this.isOnline || !auth?.currentUser || !db) return [];
     try {
       const q = query(
         collection(db, 'leaderboards'), 
@@ -242,7 +242,7 @@ class SyncService {
 
   // --- CO-OP SESSION ---
   async createRoom(mode: 2 | 5 | 25, visibility: 'public' | 'friends' | 'private'): Promise<string> {
-    if (!this.isOnline || !auth.currentUser) throw new Error("Offline or not logged in");
+    if (!this.isOnline || !auth?.currentUser || !db) throw new Error("Offline or not logged in");
     const roomRef = doc(collection(db, 'rooms'));
     await setDoc(roomRef, {
       id: roomRef.id,
@@ -267,7 +267,7 @@ class SyncService {
   }
 
   async joinRoom(roomId: string): Promise<void> {
-    if (!this.isOnline || !auth.currentUser) throw new Error("Offline or not logged in");
+    if (!this.isOnline || !auth?.currentUser || !db) throw new Error("Offline or not logged in");
     const memberRef = doc(db, `rooms/${roomId}/members`, auth.currentUser.uid);
     await setDoc(memberRef, {
       uid: auth.currentUser.uid,
@@ -278,14 +278,13 @@ class SyncService {
   }
 
   async leaveRoom(roomId: string): Promise<void> {
-    if (!this.isOnline || !auth.currentUser) return;
-    // In a real app, we'd delete the member doc or mark as away
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const memberRef = doc(db, `rooms/${roomId}/members`, auth.currentUser.uid);
     await updateDoc(memberRef, { presence: 'away' });
   }
 
   async startRoom(roomId: string): Promise<void> {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const roomRef = doc(db, 'rooms', roomId);
     await updateDoc(roomRef, {
       status: 'active',
@@ -294,7 +293,7 @@ class SyncService {
   }
 
   async updateRoomPresence(roomId: string, presence: 'active' | 'paused' | 'away'): Promise<void> {
-    if (!this.isOnline || !auth.currentUser) return;
+    if (!this.isOnline || !auth?.currentUser || !db) return;
     const memberRef = doc(db, `rooms/${roomId}/members`, auth.currentUser.uid);
     await updateDoc(memberRef, {
       presence,
@@ -303,7 +302,7 @@ class SyncService {
   }
 
   listenRoom(roomId: string, callback: (room: any, members: any[]) => void): () => void {
-    if (!this.isOnline) return () => {};
+    if (!this.isOnline || !db) return () => {};
     
     let currentRoom: any = null;
     let currentMembers: any[] = [];
@@ -328,8 +327,7 @@ class SyncService {
 
   // --- LIGAS ---
   async getLeagueState(): Promise<any> {
-    if (!this.isOnline || !auth.currentUser) return null;
-    // Simplified: fetch from user profile or a specific league doc
+    if (!this.isOnline || !auth?.currentUser || !db) return null;
     const docRef = doc(db, 'leagueMembers', auth.currentUser.uid);
     const snap = await getDoc(docRef);
     return snap.exists() ? snap.data() : null;
@@ -337,14 +335,14 @@ class SyncService {
 
   // --- COMUNIDADE ---
   async listCommunityPacks(): Promise<any[]> {
-    if (!this.isOnline || !auth.currentUser) return [];
+    if (!this.isOnline || !auth?.currentUser || !db) return [];
     const q = query(collection(db, 'communityPacks'), where('isPublic', '==', true));
     const snap = await getDocs(q);
     return snap.docs.map(d => d.data());
   }
 
   async listCommunityTemplates(): Promise<any[]> {
-    if (!this.isOnline || !auth.currentUser) return [];
+    if (!this.isOnline || !auth?.currentUser || !db) return [];
     const q = query(collection(db, 'templates'), where('moderation.status', '==', 'approved'));
     const snap = await getDocs(q);
     return snap.docs.map(d => d.data());
@@ -352,7 +350,7 @@ class SyncService {
 
   // --- REPLAY ---
   async getWeeklyReplay(weekId: string): Promise<any> {
-    if (!this.isOnline || !auth.currentUser) return null;
+    if (!this.isOnline || !auth?.currentUser || !db) return null;
     const docRef = doc(db, `replays/${auth.currentUser.uid}/${weekId}`);
     const snap = await getDoc(docRef);
     return snap.exists() ? snap.data() : null;

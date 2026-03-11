@@ -24,7 +24,7 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
 
   const loadProfile = async () => {
     setLoading(true);
-    if (auth.currentUser) {
+    if (auth?.currentUser) {
       const p = await syncService.getUserProfile(auth.currentUser.uid);
       setProfile(p);
     } else {
@@ -35,6 +35,7 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
 
   const handleLogin = async () => {
     try {
+      if (!auth) return;
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       await loadProfile();
@@ -44,13 +45,13 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) await signOut(auth);
     setProfile(null);
   };
 
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!handleInput.trim() || !auth.currentUser) return;
+    if (!handleInput.trim() || !auth?.currentUser) return;
     setIsCreating(true);
     try {
       // Check if handle exists
@@ -60,7 +61,7 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
         setIsCreating(false);
         return;
       }
-      const p = await syncService.createProfile(handleInput.trim(), auth.currentUser.displayName || 'Usuário');
+      const p = await syncService.createProfile(handleInput.trim(), auth!.currentUser!.displayName || 'Usuário');
       if (p) setProfile(p);
     } catch (e) {
       console.error("Error creating profile", e);
@@ -81,7 +82,7 @@ export function ProfileOverlay({ isOpen, onClose }: ProfileOverlayProps) {
       <div className="space-y-6">
         {loading ? (
           <div className="text-center py-8 text-subtext font-mono">Carregando...</div>
-        ) : !auth.currentUser ? (
+        ) : !auth?.currentUser ? (
           <div className="text-center py-8 space-y-4">
             <p className="text-subtext">Faça login para sincronizar seus dados e acessar recursos sociais.</p>
             <button 

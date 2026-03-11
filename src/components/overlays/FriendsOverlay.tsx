@@ -24,7 +24,7 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
 
   const loadFriends = async () => {
     setLoading(true);
-    if (auth.currentUser) {
+    if (auth?.currentUser) {
       const fs = await syncService.getFriendships();
       setFriendships(fs);
       
@@ -46,7 +46,7 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
 
   const handleAddFriend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!handleInput.trim() || !auth.currentUser) return;
+    if (!handleInput.trim() || !auth?.currentUser) return;
     setAdding(true);
     try {
       await syncService.sendFriendRequest(handleInput.trim());
@@ -76,7 +76,7 @@ export function FriendsOverlay({ isOpen, onClose }: FriendsOverlayProps) {
   return (
     <ModalShell isOpen={isOpen} onClose={onClose} title="Amigos">
       <div className="space-y-8">
-        {!auth.currentUser ? (
+        {!auth?.currentUser ? (
           <div className="text-center py-8 text-subtext">Faça login no Perfil para adicionar amigos.</div>
         ) : loading ? (
           <div className="text-center py-8 text-subtext font-mono">Carregando...</div>

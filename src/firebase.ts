@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
 import fallbackConfig from '../firebase-config.json';
 
 const firebaseConfig = {
@@ -16,6 +16,22 @@ const firebaseConfig = {
 const firestoreDatabaseId =
   import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || fallbackConfig.firestoreDatabaseId;
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firestoreDatabaseId);
-export const auth = getAuth(app);
+const isConfigured = !!firebaseConfig.apiKey && !!firebaseConfig.projectId;
+
+let app: FirebaseApp | null = null;
+let db: Firestore | null = null;
+let auth: Auth | null = null;
+
+if (isConfigured) {
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app, firestoreDatabaseId);
+    auth = getAuth(app);
+  } catch (e) {
+    console.warn('[Firebase] Falha ao inicializar:', e);
+  }
+} else {
+  console.info('[Firebase] Sem credenciais configuradas. Rodando em modo offline.');
+}
+
+export { db, auth };
